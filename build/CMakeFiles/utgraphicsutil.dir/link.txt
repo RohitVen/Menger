@@ -1,0 +1,1 @@
+/lusr/opt/gcc-5.2.0/bin/g++  -fPIC --std=c++11 -g -fmax-errors=1   -shared -Wl,-soname,libutgraphicsutil.so -o libutgraphicsutil.so CMakeFiles/utgraphicsutil.dir/lib/debuggl.cc.o 

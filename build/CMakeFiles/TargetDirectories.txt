@@ -1,0 +1,2 @@
+/v/filer4b/v38q001/rohitven/Desktop/CS354/A2/menger/build/src/CMakeFiles/menger.dir
+/v/filer4b/v38q001/rohitven/Desktop/CS354/A2/menger/build/CMakeFiles/utgraphicsutil.dir
