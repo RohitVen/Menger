@@ -15,12 +15,12 @@ public:
 			       std::vector<glm::vec4>& vtx_normals,
 	                       std::vector<glm::uvec3>& obj_faces);
 
-	void drawSponge(std::vector<glm::vec4>& obj_vertices, std::vector<glm::uvec3>& obj_faces, int level,
-	double minx, double miny, double minz, double maxx, double maxy, double maxz);
+	void drawSponge(std::vector<glm::vec4>& obj_vertices, std::vector<glm::uvec3>& obj_faces, std::vector<glm::vec4>& vtx_normals, 
+		int level, double minx, double miny, double minz, double maxx, double maxy, double maxz);
 
 	void drawCube(std::vector<glm::vec4>& obj_vertices, std::vector<glm::uvec3>& obj_faces,
 	double minx, double miny, double minz, double maxx, double maxy, double maxz);
-	// void quad(int a, int b, int c, int d);
+
 private:
 	bool dirty_ = false;
 

@@ -277,16 +277,6 @@ int main(int argc, char* argv[])
 	CHECK_GL_ERROR(glAttachShader(program_id, fragment_shader_id));
 //	CHECK_GL_ERROR(glAttachShader(program_id, geometry_shader_id));
 
-	CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kVertexBuffer]));
-	// NOTE: We do not send anything right now, we just describe it to OpenGL.
-	CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
-				sizeof(float) * obj_vertices.size() * 4, nullptr,
-				GL_STATIC_DRAW));
-	CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kNormalBuffer]));
-	// NOTE: We do not send anything right now, we just describe it to OpenGL.
-	CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
-				sizeof(float) * vtx_normals.size() * 4, nullptr,
-				GL_STATIC_DRAW));
 	// Bind attributes.
 	CHECK_GL_ERROR(glBindAttribLocation(program_id, 0, "vertex_position"));
 
@@ -334,8 +324,7 @@ int main(int argc, char* argv[])
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glDepthFunc(GL_LESS);
 
-		// Switch to the Geometry VAO.
-		CHECK_GL_ERROR(glBindVertexArray(g_array_objects[kGeometryVao]));
+
 		if (g_menger && g_menger->is_dirty()) 
 		{
 			obj_vertices.clear();
@@ -350,6 +339,25 @@ int main(int argc, char* argv[])
 			std::cout<<"\nFINISHED GENERATING!!\n\n\n";
 		}
 
+		// Switch to the Geometry VAO.
+		CHECK_GL_ERROR(glBindVertexArray(g_array_objects[kGeometryVao]));
+
+		//Loading vertex data
+		CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kVertexBuffer]));
+		CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
+		                            sizeof(float) * obj_vertices.size() * 4,
+		                            &obj_vertices[0], GL_STATIC_DRAW));
+		//Loading normal data
+		CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kNormalBuffer]));
+		CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
+		                            sizeof(float) * vtx_normals.size() * 4,
+		                            &vtx_normals[0], GL_STATIC_DRAW));
+	    //Loading face data
+		CHECK_GL_ERROR(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kIndexBuffer]));
+		CHECK_GL_ERROR(glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+									sizeof(uint32_t) * obj_faces.size() * 3,
+									&obj_faces[0], GL_STATIC_DRAW));
+
 
 		// Compute the projection matrix.
 		aspect = static_cast<float>(window_width) / window_height;
@@ -360,17 +368,6 @@ int main(int argc, char* argv[])
 		// FIXME: change eye and center through mouse/keyboard events.
 		glm::mat4 view_matrix = g_camera.get_view_matrix();
 
-		// Send vertices to the GPU.
-		CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER,
-		                            g_buffer_objects[kGeometryVao][kVertexBuffer]));
-		CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
-		                            sizeof(float) * obj_vertices.size() * 4,
-		                            &obj_vertices[0], GL_STATIC_DRAW));
-		CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER,
-		                            g_buffer_objects[kGeometryVao][kNormalBuffer]));
-		CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
-		                            sizeof(float) * vtx_normals.size() * 4,
-		                            &vtx_normals[0], GL_STATIC_DRAW));
 		// Use our program.
 		CHECK_GL_ERROR(glUseProgram(program_id));
 
@@ -380,7 +377,6 @@ int main(int argc, char* argv[])
 		CHECK_GL_ERROR(glUniformMatrix4fv(view_matrix_location, 1, GL_FALSE,
 					&view_matrix[0][0]));
 		CHECK_GL_ERROR(glUniform4fv(light_position_location, 1, &light_position[0]));
-		// std::cout<<"\n obj_faces.size: "<<obj_faces.size();
 
 		// Draw our triangles.
 		CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, obj_faces.size() * 3, GL_UNSIGNED_INT, 0));

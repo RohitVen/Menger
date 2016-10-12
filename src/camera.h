@@ -5,7 +5,8 @@
 
 class Camera {
 public:
-	glm::mat4 get_view_matrix() const;
+	glm::mat4 get_view_matrix();
+	glm::mat4 lookAt(glm::vec3 eye, glm::vec3 look, glm::vec3 up);
 	// FIXME: add functions to manipulate camera objects.
 private:
 	float camera_distance_ = 3.0;
