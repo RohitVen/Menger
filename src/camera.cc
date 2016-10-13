@@ -18,7 +18,7 @@ namespace {
 // FIXME: Calculate the view matrix
 glm::mat4 Camera::get_view_matrix()
 {
-	return lookAt(eye_, look_, up_);
+	return lookAt(eye_, center, up_);
 }
 
 glm::mat4 Camera::lookAt(glm::vec3 eye, glm::vec3 look, glm::vec3 up)
@@ -32,7 +32,6 @@ glm::mat4 Camera::lookAt(glm::vec3 eye, glm::vec3 look, glm::vec3 up)
 		glm::vec3 X = glm::cross(Y, Z);
 		X = glm::normalize(X);
 		Y = glm::cross(Z, X);
-
 		glm::mat4 result(1);
 		result[0][0] = X.x;
 		result[1][0] = X.y;
@@ -53,4 +52,175 @@ glm::mat4 Camera::lookAt(glm::vec3 eye, glm::vec3 look, glm::vec3 up)
 		return result;
 	}
 	return glm::mat4(0);
+}
+
+void Camera::drag(double x, double y, int winx, int winy)
+{
+	// if(old_x == -1)
+	// {
+	// 	old_x = x;
+	// 	if(old_y == -1)
+	// 	{
+	// 		old_y = y;
+	// 	}
+	// }
+	// double scalex = (eye_.x/(winx/2));
+	// double scaley = (eye_.y/(winy/2));
+
+	// double worldx = winx * scalex;
+	// double worldy = winy * scaley;
+
+	// double dirx = worldx - old_x;
+	// double diry = worldy - old_y;
+
+	// glm::vec
+
+	// if(!fps_mode)
+	// {
+
+	// }
+
+}
+
+void Camera::zoom(double x, double y)
+{
+	if(old_y == -1)
+	{
+		old_y = y;
+	}
+	if(y < old_y)
+	{
+		camera_distance_ -= zoom_speed;
+		eye_.z -= zoom_speed;
+		// center = eye_ + (camera_distance_ * look_);
+		old_eye = eye_;
+	}
+	if(y > old_y)
+	{
+		camera_distance_ += zoom_speed;
+		eye_.z += zoom_speed;
+		// center = eye_ + (camera_distance_ * look_);
+		old_eye = eye_;
+	}
+	old_y = y;
+}
+
+void Camera::wasd(int w, int a, int s, int d)
+{
+	if(!fps_mode && w)
+	{
+		camera_distance_ -= zoom_speed;
+		eye_.z -= zoom_speed;
+		old_eye = eye_;
+	}
+	if(!fps_mode && s)
+	{
+		camera_distance_ += zoom_speed;
+		eye_.z += zoom_speed;
+		old_eye = eye_;
+	}
+	if(!fps_mode && a)
+	{
+		center -= (pan_speed * tangent);
+		old_center = center;
+	}
+	if(!fps_mode && d)
+	{
+		center += (pan_speed * tangent);
+		old_center = center;
+	}
+	if(fps_mode && w)
+	{
+		center = old_center;
+		eye_ += (zoom_speed * look_);
+		center += (zoom_speed * look_);
+	}
+	if(fps_mode && s)
+	{
+		center = old_center;
+		eye_ -= (zoom_speed * look_);
+		center -= (zoom_speed * look_);
+	}
+	if(fps_mode && a)
+	{
+		center = old_center;
+		eye_ -= (pan_speed * tangent);
+		old_eye = eye_;
+		center -= eye_ + (camera_distance_ * look_);
+	}
+	if(fps_mode && d)
+	{
+		center = old_center;
+		eye_ += (pan_speed * tangent);
+		old_eye = eye_;
+		center += eye_ + (camera_distance_ * look_);
+	}
+}
+
+void Camera::udlr(int u, int d, int l, int r)
+{
+	if(!fps_mode && u)
+	{
+		center += (pan_speed * up_);
+	}
+	if(!fps_mode && d)
+	{
+		center -= (pan_speed * up_);
+	}
+	if(!fps_mode && l)
+	{
+		double unewx = (up_.x * glm::cos(roll_speed)) - (up_.y * glm::sin(roll_speed));
+		double unewy = (up_.x * glm::sin(roll_speed)) + (up_.y * glm::cos(roll_speed));
+
+		up_.x = unewx;
+		up_.y = unewy;
+		up_ = glm::normalize(up_);
+		glm::vec3 tangent = glm::cross(look_, up_);
+	}
+	if(!fps_mode && r)
+	{
+		double unewx = (up_.x * glm::cos(-1*roll_speed)) - (up_.y * glm::sin(-1*roll_speed));
+		double unewy = (up_.x * glm::sin(-1*roll_speed)) + (up_.y * glm::cos(-1*roll_speed));
+
+		up_.x = unewx;
+		up_.y = unewy;
+		up_ = glm::normalize(up_);
+		glm::vec3 tangent = glm::cross(look_, up_);
+	}
+	if(fps_mode && u)
+	{
+		eye_ += (pan_speed * up_);
+		center = eye_ + (camera_distance_ * look_);
+	}
+	if(fps_mode && d)
+	{
+		eye_ -= (pan_speed * up_);
+		center = eye_ + (camera_distance_ * look_);
+	}
+	if(fps_mode && l)
+	{
+		double unewx = (up_.x * glm::cos(roll_speed)) - (up_.y * glm::sin(roll_speed));
+		double unewy = (up_.x * glm::sin(roll_speed)) + (up_.y * glm::cos(roll_speed));
+
+		up_.x = unewx;
+		up_.y = unewy;
+		up_ = glm::normalize(up_);
+		glm::vec3 tangent = glm::cross(look_, up_);
+	}
+	if(fps_mode && r)
+	{
+		double unewx = (up_.x * glm::cos(-1*roll_speed)) - (up_.y * glm::sin(-1*roll_speed));
+		double unewy = (up_.x * glm::sin(-1*roll_speed)) + (up_.y * glm::cos(-1*roll_speed));
+
+		up_.x = unewx;
+		up_.y = unewy;
+		up_ = glm::normalize(up_);
+		glm::vec3 tangent = glm::cross(look_, up_);
+	}
+
+}
+
+void Camera::swap_fps()
+{
+	fps_mode = !fps_mode;
 }

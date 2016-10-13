@@ -99,35 +99,36 @@ KeyCallback(GLFWwindow* window,
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	else if (key == GLFW_KEY_W && action != GLFW_RELEASE) {
-		// FIXME: WASD
+		g_camera.wasd(1,0,0,0);
 	} else if (key == GLFW_KEY_S && action != GLFW_RELEASE) {
+		g_camera.wasd(0,0,1,0);
 	} else if (key == GLFW_KEY_A && action != GLFW_RELEASE) {
+		g_camera.wasd(0,1,0,0);
 	} else if (key == GLFW_KEY_D && action != GLFW_RELEASE) {
+		g_camera.wasd(0,0,0,1);
 	} else if (key == GLFW_KEY_LEFT && action != GLFW_RELEASE) {
-		// FIXME: Left Right Up and Down
+		g_camera.udlr(0,0,1,0);
 	} else if (key == GLFW_KEY_RIGHT && action != GLFW_RELEASE) {
+		g_camera.udlr(0,0,0,1);
 	} else if (key == GLFW_KEY_DOWN && action != GLFW_RELEASE) {
+		g_camera.udlr(0,1,0,0);
 	} else if (key == GLFW_KEY_UP && action != GLFW_RELEASE) {
+		g_camera.udlr(1,0,0,0);
 	} else if (key == GLFW_KEY_C && action != GLFW_RELEASE) {
-		// FIXME: FPS mode on/off
+		g_camera.swap_fps();
 	}
 	if (!g_menger)
 		return ; // 0-4 only available in Menger mode.
 	if (key == GLFW_KEY_0 && action != GLFW_RELEASE) {
 		g_menger->set_nesting_level(0);
-		// g_menger->set_clean();
 	} else if (key == GLFW_KEY_1 && action != GLFW_RELEASE) {
 		g_menger->set_nesting_level(1);
-		// g_menger->set_clean();
 	} else if (key == GLFW_KEY_2 && action != GLFW_RELEASE) {
 		g_menger->set_nesting_level(2);
-		// g_menger->set_clean();
 	} else if (key == GLFW_KEY_3 && action != GLFW_RELEASE) {
 		g_menger->set_nesting_level(3);
-		// g_menger->set_clean();
 	} else if (key == GLFW_KEY_4 && action != GLFW_RELEASE) {
 		g_menger->set_nesting_level(4);
-		// g_menger->set_clean();
 	}
 }
 
@@ -140,9 +141,9 @@ MousePosCallback(GLFWwindow* window, double mouse_x, double mouse_y)
 	if (!g_mouse_pressed)
 		return;
 	if (g_current_button == GLFW_MOUSE_BUTTON_LEFT) {
-		// FIXME: left drag
+		g_camera.drag(mouse_x, mouse_y, window_width, window_height);
 	} else if (g_current_button == GLFW_MOUSE_BUTTON_RIGHT) {
-		// FIXME: middle drag
+		g_camera.zoom(mouse_x, mouse_y);
 	} else if (g_current_button == GLFW_MOUSE_BUTTON_MIDDLE) {
 		// FIXME: right drag
 	}
@@ -333,9 +334,28 @@ int main(int argc, char* argv[])
 			g_menger->generate_geometry(obj_vertices, vtx_normals, obj_faces);
 			g_menger->set_clean();
 
-			std::cout<<"\n obj_faces.size: "<<obj_faces.size();
-			std::cout<<"\n obj_vertices.size: "<<obj_vertices.size();
-			std::cout<<"\n vtx_normals.size: "<<vtx_normals.size();
+			// Switch to the Geometry VAO.
+		CHECK_GL_ERROR(glBindVertexArray(g_array_objects[kGeometryVao]));
+
+		//Loading vertex data
+		CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kVertexBuffer]));
+		CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
+		                            sizeof(float) * obj_vertices.size() * 4,
+		                            &obj_vertices[0], GL_STATIC_DRAW));
+		//Loading normal data
+		CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kNormalBuffer]));
+		CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
+		                            sizeof(float) * vtx_normals.size() * 4,
+		                            &vtx_normals[0], GL_STATIC_DRAW));
+	    //Loading face data
+		CHECK_GL_ERROR(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kIndexBuffer]));
+		CHECK_GL_ERROR(glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+									sizeof(uint32_t) * obj_faces.size() * 3,
+									&obj_faces[0], GL_STATIC_DRAW));
+		
+			std::cout<<"\nobj_faces.size: "<<obj_faces.size();
+			std::cout<<"\nobj_vertices.size: "<<obj_vertices.size();
+			std::cout<<"\nvtx_normals.size: "<<vtx_normals.size();
 			std::cout<<"\nFINISHED GENERATING!!\n\n\n";
 		}
 

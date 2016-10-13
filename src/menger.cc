@@ -59,6 +59,8 @@ void Menger::drawCube(std::vector<glm::vec4>& obj_vertices, std::vector<glm::uve
 	double maxx, double maxy, double maxz)
 {
 	//Defining all the vertices
+	std::cout<<"\nMins: "<<minx<<" "<<miny<<" "<<minz;
+	std::cout<<"\nMaxs: "<<maxx<<" "<<maxy<<" "<<maxz;
 	glm::vec4 vertPos[8] = {
 		glm::vec4(minx, miny, maxz, 1.0), //Front bottom left
 		glm::vec4(minx, maxy, maxz, 1.0), //Front top left
@@ -69,6 +71,8 @@ void Menger::drawCube(std::vector<glm::vec4>& obj_vertices, std::vector<glm::uve
 		glm::vec4(maxx, maxy, minz, 1.0), //Back top right
 		glm::vec4(maxx, miny, minz, 1.0)  //Back bottom right
 	};
+
+	std::cout<<"\nvert: "<<vertPos[0][0]<<" "<<vertPos[0][1]<<" "<<vertPos[0][2];
 
 	//Loading the vertices into the VBO
 	obj_vertices.push_back(vertPos[4]);
@@ -112,6 +116,7 @@ void Menger::drawCube(std::vector<glm::vec4>& obj_vertices, std::vector<glm::uve
 	obj_vertices.push_back(vertPos[6]);
 	obj_vertices.push_back(vertPos[2]);
 	obj_vertices.push_back(vertPos[1]);
+	std::cout<<"\nFinished pushing verts!!";
 
 	//Loading faces into the VBO
 	obj_faces.push_back(glm::uvec3(0, 1, 2)); //Back face
@@ -126,6 +131,7 @@ void Menger::drawCube(std::vector<glm::vec4>& obj_vertices, std::vector<glm::uve
 	obj_faces.push_back(glm::uvec3(27, 28, 29)); //Left face
 	obj_faces.push_back(glm::uvec3(30, 31, 32)); //Top face
 	obj_faces.push_back(glm::uvec3(33, 34, 35)); //Top face
+	std::cout<<"\nFinished pushing faces!!\n";
 }
 
 void Menger::drawSponge(std::vector<glm::vec4>& obj_vertices, 
@@ -139,11 +145,11 @@ void Menger::drawSponge(std::vector<glm::vec4>& obj_vertices,
 	double xvals[4] = {minx, minx/3, maxx/3, maxx};
 	double yvals[4] = {miny, miny/3, maxy/3, maxy};
 	double zvals[4] = {minz, minz/3, maxz/3, maxz};
-
+	int count = 0;
 	//Base case
 	if(level == 0)
 	{
-		
+		count++;
 		drawCube(obj_vertices, obj_faces,
 			minx, miny, minz,
 			maxx, maxy, maxz);
@@ -188,10 +194,9 @@ void Menger::drawSponge(std::vector<glm::vec4>& obj_vertices,
 				int left = (i==0 && j==1 && k==1); //Left center
 				int top = (i==1 && j==2 && k==1); //Top center
 				int bottom = (i==1 && j==0 && k==1); //Bottom center
-				int center = (i==1 && j==1 && k==1); //Center
-				if(!front && !back && !right && !left && !top && !bottom && !center)
+				int core = (i==1 && j==1 && k==1); //Core
+				if(!front && !back && !right && !left && !top && !bottom && !core)
 				{
-					spongeCount++;
 					drawSponge(obj_vertices, obj_faces, vtx_normals, level-1,
 						xvals[i], yvals[j], zvals[k],
 						xvals[i+1], yvals[j+1], zvals[k+1]);
@@ -199,7 +204,6 @@ void Menger::drawSponge(std::vector<glm::vec4>& obj_vertices,
 			}
 		}
 	}
-	std::cout<<"\nSpongeCount: "<<spongeCount;
 }
 
 
