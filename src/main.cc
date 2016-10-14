@@ -4,7 +4,6 @@
 #include <vector>
 #include <memory>
 
-#define GLM_FORCE_RADIANS
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
@@ -99,36 +98,27 @@ KeyCallback(GLFWwindow* window,
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	else if (key == GLFW_KEY_W && action != GLFW_RELEASE) {
-		g_camera.wasd(1,0,0,0);
+		// FIXME: WASD
 	} else if (key == GLFW_KEY_S && action != GLFW_RELEASE) {
-		g_camera.wasd(0,0,1,0);
 	} else if (key == GLFW_KEY_A && action != GLFW_RELEASE) {
-		g_camera.wasd(0,1,0,0);
 	} else if (key == GLFW_KEY_D && action != GLFW_RELEASE) {
-		g_camera.wasd(0,0,0,1);
 	} else if (key == GLFW_KEY_LEFT && action != GLFW_RELEASE) {
-		g_camera.udlr(0,0,1,0);
+		// FIXME: Left Right Up and Down
 	} else if (key == GLFW_KEY_RIGHT && action != GLFW_RELEASE) {
-		g_camera.udlr(0,0,0,1);
 	} else if (key == GLFW_KEY_DOWN && action != GLFW_RELEASE) {
-		g_camera.udlr(0,1,0,0);
 	} else if (key == GLFW_KEY_UP && action != GLFW_RELEASE) {
-		g_camera.udlr(1,0,0,0);
 	} else if (key == GLFW_KEY_C && action != GLFW_RELEASE) {
-		g_camera.swap_fps();
+		// FIXME: FPS mode on/off
 	}
 	if (!g_menger)
 		return ; // 0-4 only available in Menger mode.
 	if (key == GLFW_KEY_0 && action != GLFW_RELEASE) {
-		g_menger->set_nesting_level(0);
+		// FIXME: Change nesting level of g_menger
+		// Note: GLFW_KEY_0 - 4 may not be continuous.
 	} else if (key == GLFW_KEY_1 && action != GLFW_RELEASE) {
-		g_menger->set_nesting_level(1);
 	} else if (key == GLFW_KEY_2 && action != GLFW_RELEASE) {
-		g_menger->set_nesting_level(2);
 	} else if (key == GLFW_KEY_3 && action != GLFW_RELEASE) {
-		g_menger->set_nesting_level(3);
 	} else if (key == GLFW_KEY_4 && action != GLFW_RELEASE) {
-		g_menger->set_nesting_level(4);
 	}
 }
 
@@ -141,9 +131,9 @@ MousePosCallback(GLFWwindow* window, double mouse_x, double mouse_y)
 	if (!g_mouse_pressed)
 		return;
 	if (g_current_button == GLFW_MOUSE_BUTTON_LEFT) {
-		g_camera.drag(mouse_x, mouse_y, window_width, window_height);
+		// FIXME: left drag
 	} else if (g_current_button == GLFW_MOUSE_BUTTON_RIGHT) {
-		g_camera.zoom(mouse_x, mouse_y);
+		// FIXME: middle drag
 	} else if (g_current_button == GLFW_MOUSE_BUTTON_MIDDLE) {
 		// FIXME: right drag
 	}
@@ -191,7 +181,7 @@ int main(int argc, char* argv[])
 	std::vector<glm::uvec3> obj_faces;
         
         //FIXME: Create the geometry from a Menger object (in menger.cc).
-	g_menger->set_nesting_level(0);
+	g_menger->set_nesting_level(1);
 	g_menger->generate_geometry(obj_vertices, vtx_normals, obj_faces);
 	g_menger->set_clean();
 
@@ -201,8 +191,8 @@ int main(int argc, char* argv[])
 		min_bounds = glm::min(obj_vertices[i], min_bounds);
 		max_bounds = glm::max(obj_vertices[i], max_bounds);
 	}
-	std::cout << "\nmin_bounds = " << glm::to_string(min_bounds) << "\n";
-	std::cout << "\nmax_bounds = " << glm::to_string(max_bounds) << "\n";
+	std::cout << "min_bounds = " << glm::to_string(min_bounds) << "\n";
+	std::cout << "max_bounds = " << glm::to_string(max_bounds) << "\n";
 
 	// Setup our VAO array.
 	CHECK_GL_ERROR(glGenVertexArrays(kNumVaos, &g_array_objects[0]));
@@ -219,10 +209,6 @@ int main(int argc, char* argv[])
 	CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
 				sizeof(float) * obj_vertices.size() * 4, nullptr,
 				GL_STATIC_DRAW));
-
-	// CHECK_GL_ERROR(glBufferSubData(GL_ARRAY_BUFFER, 0,
-	// 			sizeof(float) * obj_vertices.size() * 4, &obj_vertices));
-
 	CHECK_GL_ERROR(glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0));
 	CHECK_GL_ERROR(glEnableVertexAttribArray(0));
 
@@ -231,10 +217,6 @@ int main(int argc, char* argv[])
 	CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
 				sizeof(float) * vtx_normals.size() * 4, nullptr,
 				GL_STATIC_DRAW));
-
-	// CHECK_GL_ERROR(glBufferSubData(GL_ARRAY_BUFFER, 0,
-				// sizeof(float) * vtx_normals.size() * 4, &vtx_normals));
-
 	CHECK_GL_ERROR(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0));
 	CHECK_GL_ERROR(glEnableVertexAttribArray(1));
 
@@ -243,9 +225,6 @@ int main(int argc, char* argv[])
 	CHECK_GL_ERROR(glBufferData(GL_ELEMENT_ARRAY_BUFFER,
 				sizeof(uint32_t) * obj_faces.size() * 3,
 				&obj_faces[0], GL_STATIC_DRAW));
-
-	// CHECK_GL_ERROR(glBufferSubData(GL_ARRAY_BUFFER, 0,
-	// 			sizeof(float) * obj_faces.size() * 3, &obj_faces));
 
 	/*
  	 * So far the geometry is loaded into g_buffer_objects[kGeometryVao][*].
@@ -278,6 +257,16 @@ int main(int argc, char* argv[])
 	CHECK_GL_ERROR(glAttachShader(program_id, fragment_shader_id));
 //	CHECK_GL_ERROR(glAttachShader(program_id, geometry_shader_id));
 
+	CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kVertexBuffer]));
+	// NOTE: We do not send anything right now, we just describe it to OpenGL.
+	CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
+				sizeof(float) * obj_vertices.size() * 4, nullptr,
+				GL_STATIC_DRAW));
+	CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kNormalBuffer]));
+	// NOTE: We do not send anything right now, we just describe it to OpenGL.
+	CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
+				sizeof(float) * vtx_normals.size() * 4, nullptr,
+				GL_STATIC_DRAW));
 	// Bind attributes.
 	CHECK_GL_ERROR(glBindAttribLocation(program_id, 0, "vertex_position"));
 
@@ -325,59 +314,13 @@ int main(int argc, char* argv[])
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glDepthFunc(GL_LESS);
 
-
-		if (g_menger && g_menger->is_dirty()) 
-		{
-			obj_vertices.clear();
-			obj_faces.clear();
-			vtx_normals.clear();
-			g_menger->generate_geometry(obj_vertices, vtx_normals, obj_faces);
-			g_menger->set_clean();
-
-			// Switch to the Geometry VAO.
-		CHECK_GL_ERROR(glBindVertexArray(g_array_objects[kGeometryVao]));
-
-		//Loading vertex data
-		CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kVertexBuffer]));
-		CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
-		                            sizeof(float) * obj_vertices.size() * 4,
-		                            &obj_vertices[0], GL_STATIC_DRAW));
-		//Loading normal data
-		CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kNormalBuffer]));
-		CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
-		                            sizeof(float) * vtx_normals.size() * 4,
-		                            &vtx_normals[0], GL_STATIC_DRAW));
-	    //Loading face data
-		CHECK_GL_ERROR(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kIndexBuffer]));
-		CHECK_GL_ERROR(glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-									sizeof(uint32_t) * obj_faces.size() * 3,
-									&obj_faces[0], GL_STATIC_DRAW));
-		
-			std::cout<<"\nobj_faces.size: "<<obj_faces.size();
-			std::cout<<"\nobj_vertices.size: "<<obj_vertices.size();
-			std::cout<<"\nvtx_normals.size: "<<vtx_normals.size();
-			std::cout<<"\nFINISHED GENERATING!!\n\n\n";
-		}
-
 		// Switch to the Geometry VAO.
 		CHECK_GL_ERROR(glBindVertexArray(g_array_objects[kGeometryVao]));
 
-		//Loading vertex data
-		CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kVertexBuffer]));
-		CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
-		                            sizeof(float) * obj_vertices.size() * 4,
-		                            &obj_vertices[0], GL_STATIC_DRAW));
-		//Loading normal data
-		CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kNormalBuffer]));
-		CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
-		                            sizeof(float) * vtx_normals.size() * 4,
-		                            &vtx_normals[0], GL_STATIC_DRAW));
-	    //Loading face data
-		CHECK_GL_ERROR(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kIndexBuffer]));
-		CHECK_GL_ERROR(glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-									sizeof(uint32_t) * obj_faces.size() * 3,
-									&obj_faces[0], GL_STATIC_DRAW));
-
+		if (g_menger && g_menger->is_dirty()) {
+		  g_menger->generate_geometry(obj_vertices, vtx_normals, obj_faces);
+			g_menger->set_clean();
+		}
 
 		// Compute the projection matrix.
 		aspect = static_cast<float>(window_width) / window_height;
@@ -388,6 +331,17 @@ int main(int argc, char* argv[])
 		// FIXME: change eye and center through mouse/keyboard events.
 		glm::mat4 view_matrix = g_camera.get_view_matrix();
 
+		// Send vertices to the GPU.
+		CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER,
+		                            g_buffer_objects[kGeometryVao][kVertexBuffer]));
+		CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
+		                            sizeof(float) * obj_vertices.size() * 4,
+		                            &obj_vertices[0], GL_STATIC_DRAW));
+		CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER,
+		                            g_buffer_objects[kGeometryVao][kNormalBuffer]));
+		CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
+		                            sizeof(float) * vtx_normals.size() * 4,
+		                            &vtx_normals[0], GL_STATIC_DRAW));
 		// Use our program.
 		CHECK_GL_ERROR(glUseProgram(program_id));
 

@@ -6,6 +6,8 @@
 
 #IncludeRegexTransform: 
 
+../lib/debuggl.h
+
 /lusr/opt/glfw-3.2/include/GLFW/glfw3.h
 stddef.h
 -
@@ -46,9 +48,21 @@ GL/glext.h
 GL/glu.h
 -
 
-/v/filer4b/v38q001/rohitven/Desktop/CS354/A2/menger/src/menger.cc
-menger.h
-/v/filer4b/v38q001/rohitven/Desktop/CS354/A2/menger/src/menger.h
+/v/filer4b/v38q001/rohitven/Desktop/CS354/A2/menger/src/camera.h
+glm/glm.hpp
+-
+
+/v/filer4b/v38q001/rohitven/Desktop/CS354/A2/menger/src/main.cc
+fstream
+-
+iostream
+-
+string
+-
+vector
+-
+memory
+-
 glm/glm.hpp
 -
 glm/gtc/matrix_transform.hpp
@@ -59,8 +73,12 @@ GL/glew.h
 -
 GLFW/glfw3.h
 -
-iostream
+debuggl.h
 -
+menger.h
+/v/filer4b/v38q001/rohitven/Desktop/CS354/A2/menger/src/menger.h
+camera.h
+/v/filer4b/v38q001/rohitven/Desktop/CS354/A2/menger/src/camera.h
 
 /v/filer4b/v38q001/rohitven/Desktop/CS354/A2/menger/src/menger.h
 glm/glm.hpp
